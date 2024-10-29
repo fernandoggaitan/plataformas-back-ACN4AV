@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const connection = require("./db");
@@ -23,13 +25,30 @@ app.get("/test/:nombre", (req, res) => {
 });
 
 app.get("/eventos", async(req, res) => {
-
     const query = 'SELECT id, nombre, cupo FROM eventos';
-
     try{
         const [results] = await connection.query(query);
         res.json( {success: true, results: results} );
     }catch(error){
+        res.status(500).json( {success: false, message: "Error al intentar recuperar los eventos"} );
+    }
+});
+
+app.get("/eventos/:ID", async(req, res) => {
+
+    const {ID} = req.params;
+
+    const query = 'SELECT id, nombre, cupo FROM eventos WHERE id = ?';
+
+    try{
+        const [results] = await connection.query(query, [ID]);
+        if( results < 1 ){
+            res.status(404).json( {success: false, message: "El evento no existe"} );
+        }else{
+            res.json( {success: true, result: results[0]} );
+        }
+    }catch(error){
+        console.log(error);
         res.status(500).json( {success: false, message: "Error al intentar recuperar los eventos"} );
     }
 
