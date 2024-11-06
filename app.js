@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -14,7 +12,12 @@ app.listen(port, () => {
     console.log('Servidor iniciado en: http://localhost:' + port);
 });
 
+app.get('/test', (req, res) => {
+  res.send('Hola 3');
+})
+
 app.use(require('./src/routes/eventoRoutes'));
+app.use(require('./src/routes/usuarioRoutes'));
 
 app.use((req, res, next) => {
     res.status(404);
